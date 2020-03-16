@@ -4,22 +4,16 @@
   gather_facts: yes
 
   vars:
-    docker_install_compose: true
-    pip_install_packages:
-        - name: docker
-        - name: docker-compose
-    user_docker: vagrant
+    docker__edition: "ce"
+    docker__compose_version: "1.25.4"
+    docker__state: "latest"
+    docker__users: ["vagrant"]
+    validate_certs: False
 
   roles:
-    - geerlingguy.pip
-    - geerlingguy.docker
+    - nickjj.docker
 
-  tasks:
-    - name: 'add users to docker group'
-      user:
-        name: "{{user_docker}}"
-        groups: 'docker'
-        append: 'yes'
+
     
         
     
