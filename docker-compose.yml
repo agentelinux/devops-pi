@@ -1,0 +1,17 @@
+version: '3'
+services:
+    jenkins:
+        container_name: jenkins
+        image: jenkins/jenkins:latest
+        volumes:
+            - jenkins_data:/var/jenkins_home
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - "8080:8080"
+            - "5000:5000"
+            - "50000:50000"
+        network_mode: host
+
+volumes:
+    jenkins_data:
+        driver: local

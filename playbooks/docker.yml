@@ -1,0 +1,25 @@
+- name: Install DevOPS
+  hosts: local
+  become: true
+  gather_facts: yes
+
+  vars:
+    docker_install_compose: true
+    pip_install_packages:
+        - name: docker
+        - name: docker-compose
+    user_docker: vagrant
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+
+  tasks:
+    - name: 'add users to docker group'
+      user:
+        name: "{{user_docker}}"
+        groups: 'docker'
+        append: 'yes'
+    
+        
+    
