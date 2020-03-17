@@ -1,4 +1,4 @@
-- name: Instalar Jenkins como container
+- name: Instalar Jenkins em VM
   hosts: local
   become: true
   gather_facts: yes
@@ -8,9 +8,6 @@
     jenkins_port: 8080
     jenkins_java_options: "-Djava.net.preferIPv4Stack=true"
     jenkins_include_secrets: true
-    jenkins_plugins:
-      - git
-      - blueocean
 
   roles:
     - role: geerlingguy.java
