@@ -10,12 +10,12 @@
     instance_type: t2.micro
     security_group: webservers_sg
     image_ami: ami-07ebfd5b3428b6f4d
-    KeyPairDev: novakey
+    KeyPairDev: devops-key
     region: us-east-1
     count: 1
     vpc_cidr_block: 10.0.0.0/16
     vpc_name: devops-vpc
-    name_service: microservice
+    name_service: app-node01
 
 
 
@@ -25,6 +25,11 @@
         aws_access_key: "{{ AWS_access_key }}"
         aws_secret_key: "{{ AWS_secret_key }}"
         name: "{{ KeyPairDev }}"
+      register: ec2_key_result
+
+    - name: Save private key
+      copy: content="{{ ec2_key_result.key.private_key }}" dest="../{{ KeyPairDev }}.pem" mode=0600
+      when: ec2_key_result.changed
 
     - name: create VPC
       ec2_vpc_net:
@@ -135,3 +140,7 @@
         state: started 
       with_items: "{{ ec2.instances }}"
 
+
+    - name: Add all instance public IPs to host group
+      add_host: hostname={{ item.public_dns_name }} groups=ec2hosts
+      loop: "{{ ec2.instances }}"

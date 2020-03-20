@@ -1,6 +1,7 @@
 # Logs
 .vagrant/*
 tmp.vagrant
+*.pem
 logs
 *.log
 npm-debug.log*
