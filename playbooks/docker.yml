@@ -7,7 +7,7 @@
     docker__edition: "ce"
     docker__compose_version: "1.25"
     docker__state: "latest"
-    docker__users: ["vagrant"]
+    docker__users: ["vagrant","ubuntu"]
     validate_certs: False
 
   roles:

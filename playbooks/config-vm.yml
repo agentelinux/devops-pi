@@ -1,0 +1,31 @@
+- name: "Ansible para configurar VM"
+  hosts: local
+  become: true
+  gather_facts: yes
+
+  tasks:
+    - name: 1 - Linux - Atualizando todos os pacotes
+      package:
+        name: '*'
+        state: latest
+        update_only: yes
+
+    - name: 2 - Verifique se uma lista de pacotes está instalada
+      package:
+        name: "{{ packages }}"
+        state: latest
+        update_cache: yes
+      vars:
+        packages:
+        - python3
+        - python-pip
+        - device-mapper-persistent-data
+        - lvm2
+
+    - name: 3 - Verifica pacotes essenciais do python
+      pip:
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - boto
+        - boto3
