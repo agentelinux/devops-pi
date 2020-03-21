@@ -1,6 +1,7 @@
 # DevOps Hands-on AWS com Ansible, Docker, Jenkins
 Estrutura dividida em Trilhas
 > Trilhas 1 e 2 correspondem ao ambiente desktop
+>
 > Trilhas 3 2 4 correspondem a instação e configuração do Docker e do Jenkins
 
 # 1. Trilha local
