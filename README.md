@@ -12,32 +12,22 @@ Estrutura dividida em Trilhas
 * Continua na Trilha AWS
 
 # 2. Trilha conectar com a AWS
-* É necessário ter instalado o python3, Ansible
-* Pré requisito seguir uma das Trilhas anteriores
+* Pré requisito seguir a da Trilhas Local
 * Instalar o ansible no Linux
-
-`$ bash ./install_ansible.sh`
+> `$ bash ./install_ansible.sh`
 * Scripts Ansible para automatizar a instalação do ambiente
 * Criar um arquivo para as senhas
-
-`$ vi ~/.ansible/.vault_pass`
-
-Conteúdo o arquivo .vault_pass
-> senha
-
+> `$ vi ~/.ansible/.vault_pass`
+* Conteúdo o arquivo .vault_pass
+> > senha
 * Instalar outras dependencias pip3, boto, boto3, etc
-
-`$ ansible-playbook playbooks/config-vm.yml`
-
+> `$ ansible-playbook playbooks/config-vm.yml`
 * Criar um arquivo para cofre de senhas
-
-`$ vi ~/.ansible/.vault_pass`
-
+> `$ vi ~/.ansible/.vault_pass`
 * Criar o cofre de senha
-
-`$ ansible-vault create aws_credentials.yml`
+> `$ ansible-vault create aws_credentials.yml`
 * Como visualizar o conteúdo de um cofre
-`$ ansible-vault view aws_credentials.yml --vault-password-file ~/.ansible/.vault_pass`
+> `$ ansible-vault view aws_credentials.yml --vault-password-file ~/.ansible/.vault_pass`
 > AWSAccessKeyId: AKIAJLHNMCBOI*******
 >
 > AWSSecretKey: iMcMw4TB7cv9k*******
