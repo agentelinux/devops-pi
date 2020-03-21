@@ -1,5 +1,7 @@
-# devops-pi
-Estrutura de projeto dividido em Trilhas
+# DevOps Hands-on AWS com Ansible, Docker, Jenkins
+Estrutura dividida em Trilhas
+> Trilhas 1 e 2 correspondem ao ambiente desktop
+> Trilhas 3 2 4 correspondem a instação e configuração do Docker e do Jenkins
 
 # 1. Trilha local
 * É necessário instalar o [VirtualBox](http://virtualbox.org/)
@@ -23,11 +25,13 @@ Estrutura de projeto dividido em Trilhas
 * Como visualizar o conteúdo de um cofre
 `$ ansible-vault view aws_credentials.yml --vault-password-file ~/.ansible/.vault_pass`
 > AWSAccessKeyId: AKIAJLHNMCBOI*******
+>
 > AWSSecretKey: iMcMw4TB7cv9k*******
 * É necessário instalar o [aws-cli](https://docs.aws.amazon.com/pt_br/cli/latest/userguide/cli-chap-install.html)
 * Listar a VMs EC2 instaladas
 `$ ansible-inventory --graph aws_ec2`
 > @aws_ec2:
+>
 >   |--ec2-3-84-36-30.compute-1.amazonaws.com
 
 # 3. Trilha provisionar um Linux EC2 na AWS
