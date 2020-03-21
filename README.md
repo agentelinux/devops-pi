@@ -1,16 +1,21 @@
 # devops-pi
-Estrutura de projeto
+Estrutura de projeto dividido em Trilhas
 
 # 1. Trilha local
 * É necessário instalar o [VirtualBox](http://virtualbox.org/)
 * É necessário instalar o [Vagrant](http://vagrantup.com/)
 * (Linux pré-instalado) Linux no virtualbox
 * (Usar o Vagrant para instalar o Linux no VirtualBox) vagrant up
+* Continua na Trilha AWS
 
-# 2. Trilha remota com AWS
-* É necessário ter instalado o python3, pip3 e Ansible
-* Outros programas necessários
-`$ pip install boto boto3`
+# 2. Trilha conectar com a AWS
+* É necessário ter instalado o python3, Ansible
+* Pré requisito seguir uma das Trilhas anteriores
+* Instalar o ansible no Linux
+* * `$ bash ./install_ansible.sh`
+* Scripts Ansible para automatizar a instalação do ambiente
+* * pip3, boto, boto3, etc
+* * `$ ansible-playbook playbooks/config-vm.yml`
 * Criar um arquivo para cofre de senhas
 `$ vi ~/.ansible/.vault_pass`
 * Criar o cofre de senha
@@ -25,12 +30,14 @@ Estrutura de projeto
 > @aws_ec2:
 >   |--ec2-3-84-36-30.compute-1.amazonaws.com
 
+# 3. Trilha provisionar um Linux EC2 na AWS
+O objetivo é criarmos um ambiente de desenvolvimento, homologação ou produção
+* Instalar uma infra completa do VPC-EC2 com ansible
+* * `$ ansible-playbook playbooks/aws_provisioning.yml`
 
-# 3. Jenkins
-* Pré requisito ter o Linux instalado
-* Instalar o ansible no Linux
-* * `$ bash ./install_ansible.sh`
-* Scripts Ansible para automatizar a instalação do ambiente
+
+# 4. Trilha Jenkins na EC2
+Concluído as demais Trilhas, vamos criar o Jenkins dentro da VM EC2 AWS
 * Instalar o docker daemon com ansible
 * * `$ ansible-playbook playbooks/docker.yml`
 * * Sair do Linux para refletir as configurações de grupo
