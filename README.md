@@ -28,14 +28,12 @@ Estrutura dividida em Trilhas
 > `$ ansible-vault create aws_credentials.yml`
 * Como visualizar o conteúdo de um cofre
 > `$ ansible-vault view aws_credentials.yml --vault-password-file ~/.ansible/.vault_pass`
-> AWSAccessKeyId: AKIAJLHNMCBOI*******
->
-> AWSSecretKey: iMcMw4TB7cv9k*******
+> `AWSAccessKeyId: AKIAJLHNMCBOI*******`
+> `AWSSecretKey: iMcMw4TB7cv9k*******`
 * É necessário instalar o [aws-cli](https://docs.aws.amazon.com/pt_br/cli/latest/userguide/cli-chap-install.html)
 * Listar a VMs EC2 instaladas
 `$ ansible-inventory --graph aws_ec2`
 > @aws_ec2:
->
 >   |--ec2-3-84-36-30.compute-1.amazonaws.com
 
 # 3. Trilha provisionar um Linux EC2 na AWS
