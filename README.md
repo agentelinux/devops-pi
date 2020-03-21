@@ -15,13 +15,26 @@ Estrutura dividida em Trilhas
 * É necessário ter instalado o python3, Ansible
 * Pré requisito seguir uma das Trilhas anteriores
 * Instalar o ansible no Linux
-* * `$ bash ./install_ansible.sh`
+
+`$ bash ./install_ansible.sh`
 * Scripts Ansible para automatizar a instalação do ambiente
-* * pip3, boto, boto3, etc
-* * `$ ansible-playbook playbooks/config-vm.yml`
-* Criar um arquivo para cofre de senhas
+* Criar um arquivo para as senhas
+
 `$ vi ~/.ansible/.vault_pass`
+
+Conteúdo o arquivo .vault_pass
+> senha
+
+* Instalar outras dependencias pip3, boto, boto3, etc
+
+`$ ansible-playbook playbooks/config-vm.yml`
+
+* Criar um arquivo para cofre de senhas
+
+`$ vi ~/.ansible/.vault_pass`
+
 * Criar o cofre de senha
+
 `$ ansible-vault create aws_credentials.yml`
 * Como visualizar o conteúdo de um cofre
 `$ ansible-vault view aws_credentials.yml --vault-password-file ~/.ansible/.vault_pass`
