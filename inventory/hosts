@@ -1,7 +1,7 @@
 [local:vars]
-ansible_user=vagrant
-ansible_sudo_pass=vagrant
-ansible_connection=local 
+ansible_user=ubuntu
+ansible_sudo_pass=ubuntu
+ansible_connection=local
 
 [local]
 127.0.0.1
