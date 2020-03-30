@@ -8,7 +8,6 @@
       package:
         name: '*'
         state: latest
-        update_only: yes
 
     - name: 2 - Verifique se uma lista de pacotes está instalada
       package:
@@ -18,8 +17,8 @@
       vars:
         packages:
         - python3
+        - python3-pip
         - python-pip
-        - device-mapper-persistent-data
         - lvm2
 
     - name: 3 - Verifica pacotes essenciais do python

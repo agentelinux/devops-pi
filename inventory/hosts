@@ -1,6 +1,6 @@
 [local:vars]
-ansible_user=vagrant
-ansible_sudo_pass=vagrant
+ansible_user=ubuntu
+ansible_sudo_pass=ubuntu
 ansible_connection=local 
 
 [local]
