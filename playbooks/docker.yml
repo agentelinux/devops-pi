@@ -1,5 +1,5 @@
 - name: Install DevOPS
-  hosts: local
+  hosts: aws_ec2
   become: true
   gather_facts: yes
 
@@ -9,9 +9,10 @@
     docker__state: "latest"
     docker__users: ["vagrant","ubuntu"]
     validate_certs: False
-
+  
   roles:
-    - nickjj.docker
+    - { role: nickjj.docker, remote_src: yes }
+
 
 
     

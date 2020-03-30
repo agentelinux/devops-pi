@@ -1,5 +1,5 @@
 - name: Instalar Jenkins em VM
-  hosts: local
+  hosts: aws_ec2
   become: true
   gather_facts: yes
 
@@ -10,5 +10,5 @@
     jenkins_include_secrets: true
 
   roles:
-    - role: geerlingguy.java
-    - role: geerlingguy.jenkins
+    - { role: geerlingguy.java, remote_src: yes }
+    - { role: geerlingguy.jenkins, remote_src: yes }

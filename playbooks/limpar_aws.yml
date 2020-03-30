@@ -1,0 +1,84 @@
+- name: "Ansible para configurar VM"
+  hosts: local
+  gather_facts: False
+  vars_files:
+    - vars/aws_credentials.yml
+
+  vars:
+    projeto: devops
+    AWS_access_key: "{{ AWSAccessKeyId }}"
+    AWS_secret_key: "{{ AWSSecretKey }}"
+    instance_type: t2.micro
+    security_group: "{{ projeto }}-ws-sg"
+    image_ami: ami-07ebfd5b3428b6f4d
+    KeyPairDev: "{{ projeto }}-key"
+    region: us-east-1
+    count: 1
+    vpc_cidr_block: 10.0.0.0/16
+    cidr_block: 10.0.1.16/28
+    vpc_name: "{{ projeto }}-vpc"
+    name_service: app-node01
+    route_tag: "{{ projeto }}-route"
+    sub_tag: "{{ projeto }}-subnet"
+    vpc__id: vpc-04e0092711fc340a0
+
+
+
+  tasks:
+
+    - name: DELETE the new EC2 Instance 22
+      ec2_instance:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        name: "{{ name_service }}"
+        state: absent
+        region: "{{ region }}"
+        filters:
+          instance-state-name: running        
+      register: ec2
+
+    - name: DELETE subnet route table
+      ec2_vpc_route_table:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"                
+        vpc_id: "{{ vpc__id }}"
+        region: "{{ region }}"
+        state: absent
+        lookup: tag
+        route_table_id: "{{ route_tag }}"
+        purge_tags: yes
+        purge_subnets: yes
+
+      register: public_route_table      
+
+
+    - name: DELETE VPC subnets
+      ec2_vpc_subnet:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        state: absent
+        vpc_id: "{{ vpc__id }}"
+        cidr: "{{ cidr_block }}"
+        tags:
+          Name: devops
+      register: create_vpc_subnets
+
+    - name: DELETE Internet Gateway with VPC
+      ec2_vpc_igw:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"        
+        vpc_id: "{{ vpc__id }}"
+        state: absent
+      register: igw
+
+    - name: DELETE THE VPC
+      ec2_vpc_net:   
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        name: "{{ vpc_name }}"  
+        cidr_block: "{{ vpc_cidr_block }}" 
+        region: "{{ region }}" 
+        state: absent  
+        purge_cidrs: yes  
+      register: vpc_delete          
+
