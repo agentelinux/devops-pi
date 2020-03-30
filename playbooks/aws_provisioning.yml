@@ -5,17 +5,21 @@
     - vars/aws_credentials.yml
 
   vars:
+    projeto: devops
     AWS_access_key: "{{ AWSAccessKeyId }}"
     AWS_secret_key: "{{ AWSSecretKey }}"
     instance_type: t2.micro
-    security_group: webservers_sg
+    security_group: "{{ projeto }}-ws-sg"
     image_ami: ami-07ebfd5b3428b6f4d
-    KeyPairDev: devops-key
+    KeyPairDev: "{{ projeto }}-key"
     region: us-east-1
     count: 1
     vpc_cidr_block: 10.0.0.0/16
-    vpc_name: devops-vpc
+    cidr_block: 10.0.1.16/28
+    vpc_name: "{{ projeto }}-vpc"
     name_service: app-node01
+    route_tag: "{{ projeto }}-route"
+    sub_tag: "{{ projeto }}-subnet"
 
 
 
@@ -52,9 +56,9 @@
         aws_secret_key: "{{ AWS_secret_key }}"
         state: present
         vpc_id: "{{ vpc_id }}"
-        cidr: 10.0.1.16/28
+        cidr: "{{ cidr_block }}"
         tags:
-          Name: devops
+          Name: "{{ sub_tag }}"
       register: create_vpc_subnets
 
     - name: "set fact: VPC SUB ID"
@@ -102,14 +106,6 @@
         region: "{{ region }}"
       register: ec2
 
-    - name: Add VMs to inventory group
-      add_host: name={{ item.public_dns_name }}
-                groups=ec2_vms
-                ansible_user=ubuntu
-                instance_name={{ item.tags.Name }}
-      with_items: "{{ ec2.instances }}"
-
-
     - name: Create Internet Gateway with VPC
       ec2_vpc_igw:
         aws_access_key: "{{ AWS_access_key }}"
@@ -125,7 +121,7 @@
         vpc_id: "{{ create_vpc.vpc.id }}"
         region: "{{ region }}"
         tags:
-          Name: Public
+          Name: "{{ route_tag }}"
         subnets:
           - "{{ vpc_subnet_ids }}"
         routes:

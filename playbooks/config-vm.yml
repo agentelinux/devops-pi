@@ -1,16 +1,19 @@
 - name: "Ansible para configurar VM"
-  hosts: local
+  hosts: aws_ec2
   become: true
   gather_facts: yes
 
   tasks:
-    - name: 1 - Linux - Atualizando todos os pacotes
+    - name: Linux - Atualizando todos os pacotes
       package:
         name: '*'
         state: latest
-        update_only: yes
 
-    - name: 2 - Verifique se uma lista de pacotes está instalada
+    - name: Repositorio Ansible
+      apt_repository:
+        repo: ppa:ansible/ansible
+      
+    - name: Verifique se uma lista de pacotes para instalar
       package:
         name: "{{ packages }}"
         state: latest
@@ -18,14 +21,27 @@
       vars:
         packages:
         - python3
-        - python-pip
-        - device-mapper-persistent-data
+        - python3-pip
         - lvm2
+        - ansible
+        - software-properties-common
 
-    - name: 3 - Verifica pacotes essenciais do python
+    - name: Verifica pacotes essenciais do python
       pip:
         name: "{{ packages }}"
       vars:
         packages:
         - boto
         - boto3
+    
+    - name: Download required roles docker (desktop local)
+      local_action: command ansible-galaxy install nickjj.docker 
+      become: false
+
+    - name: Download required roles java
+      local_action: command ansible-galaxy install geerlingguy.java 
+      become: false
+
+    - name: Download required roles jenkins
+      local_action: command ansible-galaxy install geerlingguy.jenkins 
+      become: false
