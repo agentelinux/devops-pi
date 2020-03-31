@@ -1,5 +1,5 @@
 - name: "Ansible para configurar VM"
-  hosts: aws_ec2
+  hosts: local
   become: true
   gather_facts: yes
 
@@ -22,18 +22,20 @@
         packages:
         - python3
         - python3-pip
-        - python-pip
         - lvm2
-        - ansible
         - software-properties-common
 
     - name: Verifica pacotes essenciais do python
       pip:
         name: "{{ packages }}"
+        executable: pip3
       vars:
         packages:
         - boto
         - boto3
+        - botocore
+        - ansible
+        - awscli
     
     - name: Download required roles docker (desktop local)
       local_action: command ansible-galaxy install nickjj.docker 
