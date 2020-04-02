@@ -24,6 +24,7 @@
         - python3-pip
         - lvm2
         - software-properties-common
+        - ntpdate
 
     - name: Verifica pacotes essenciais do python
       pip:
