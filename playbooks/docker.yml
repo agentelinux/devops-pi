@@ -1,5 +1,5 @@
 - name: Install DevOPS
-  hosts: aws_ec2
+  hosts: local
   become: true
   gather_facts: yes
 
