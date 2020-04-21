@@ -108,8 +108,8 @@
             assign_public_ip: true
         state: running
         region: "{{ region }}"
-      register: ec2
       with_sequence: start=1 end="{{ count }}"
+      register: ec2
 
     - name: Create Internet Gateway with VPC
       ec2_vpc_igw:
@@ -139,16 +139,32 @@
         host: "{{ item.public_dns_name }}"
         port: 22 
         state: started 
-      with_items: "{{ ec2.instances }}"
+      with_items: "{{ ec2.results[0].instances }}"
 
-    - name: Create a simple s3 bucket DEV
+    - name: Create empty buckets for backup
       s3_bucket:
         aws_access_key: "{{ AWS_access_key }}"
-        aws_secret_key: "{{ AWS_secret_key }}"  
-        name: "{{ item }}"
-        state: present
+        aws_secret_key: "{{ AWS_secret_key }}"          
+        name: '{{ item }}'
         region: "{{ region }}"
-        permission: public-read
+        state: present
+        policy:
+          Version: '2012-10-17'
+          Statement: 
+            - Effect: Allow
+              Principal: 
+                'AWS' : '*'
+              Action: [
+                  's3:ListBucket',
+                  's3:DeleteObject',
+                  's3:GetObject',
+                  's3:PutObject',
+                  's3:PutObjectAcl'
+              ]
+              Resource: [
+                'arn:aws:s3:::{{item}}/*',
+                'arn:aws:s3:::{{item}}'
+              ]
       loop:
-        - dev
-        - prod
+        - dh-pj-devops-dev
+        - dh-pj-devops-prod
