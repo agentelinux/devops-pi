@@ -1,0 +1,19 @@
+- name: Instalar Jenkins em VM
+  hosts: aws_ec2
+  become: true
+  gather_facts: yes
+
+  vars:
+    jenkins_hostname: "127.0.0.1"
+    jenkins_port: 8080
+    jenkins_java_options: "-Djava.net.preferIPv4Stack=true -Djenkins.install.runSetupWizard=false"
+    jenkins_include_secrets: true
+    jenkins_init_changes:
+     - option: "JENKINS_ARGS"
+       value: "--prefix={{ jenkins_url_prefix }}"
+     - option: "JENKINS_JAVA_OPTIONS"
+       value: "{{ jenkins_java_options }}"
+
+  roles:
+    - { role: geerlingguy.java, remote_src: yes }
+    - { role: geerlingguy.jenkins, remote_src: yes }
