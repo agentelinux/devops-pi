@@ -1,5 +1,5 @@
 - name: Install DevOPS
-  hosts: aws_ec2
+  hosts: jenkins,nodes
   become: true
   gather_facts: yes
 

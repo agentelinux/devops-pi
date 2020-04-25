@@ -1,5 +1,5 @@
 - name: "Ansible para configurar VM"
-  hosts: aws_ec2
+  hosts: jenkins,nodes
   become: true
   gather_facts: yes
 
@@ -8,15 +8,13 @@
       package:
         name: '*'
         state: latest
-
-    - name: Repositorio Ansible
-      apt_repository:
-        repo: ppa:ansible/ansible
       
     - name: Verifique se uma lista de pacotes para instalar
       package:
         name: "{{ packages }}"
-        state: latest
+        state: present
+        autoclean: yes
+        autoremove: yes
         update_cache: yes
       vars:
         packages:
@@ -25,6 +23,7 @@
         - lvm2
         - software-properties-common
         - ntpdate
+        - openjdk-8-jdk
 
     - name: Verifica pacotes essenciais do python
       pip:
@@ -35,6 +34,5 @@
         - boto
         - boto3
         - botocore
-        - ansible
         - awscli
-    
+  
