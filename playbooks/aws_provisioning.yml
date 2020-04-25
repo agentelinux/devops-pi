@@ -124,17 +124,26 @@
         state: started 
       with_items: "{{ ec2.results[0].instances }}"
 
-    - name: Create empty buckets for backup
+    - name: Create iam user "{{ name_aim_user_s3 }}"
       iam_user:
         aws_access_key: "{{ AWS_access_key }}"
         aws_secret_key: "{{ AWS_secret_key }}"          
-        name: '{{ name_aim_user_s3 }}'
+        name: "{{ name_aim_user_s3 }}"
         managed_policy:
           - arn:aws:iam::aws:policy/AmazonS3FullAccess
         state: present
-      register: aimuser
+      register: iuser
 
-    - name: Create empty buckets for NodeJS APP
+    - name: Create a buckets
+      aws_s3:
+        bucket: '{{ item }}'
+        mode: create
+        region: us-east-1
+      loop:
+        - dh-pi-devops-dev
+        - dh-pi-devops-prod
+
+    - name: Create S3
       s3_bucket:
         aws_access_key: "{{ AWS_access_key }}"
         aws_secret_key: "{{ AWS_secret_key }}"          
@@ -146,7 +155,7 @@
           Statement: 
             - Effect: Allow
               Principal: 
-                'AWS' : "{{ aimuser.arn }}"
+                'AWS' : "{{ iuser.iam_user.user.arn }}"
               Action: [
                   's3:ListBucket',
                   's3:DeleteObject',
@@ -159,5 +168,5 @@
                 'arn:aws:s3:::{{item}}'
               ]
       loop:
-        - dh-pj-devops-dev
-        - dh-pj-devops-prod
+        - dh-pi-devops-dev
+        - dh-pi-devops-prod
