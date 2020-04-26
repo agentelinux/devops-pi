@@ -1,7 +1,31 @@
+- name: Setup Ansible Hosts Group
+  hosts: localhost
+  gather_facts: False
+
+  vars_files:
+    - vars/aws_credentials.yml
+    - vars/aws.yml
+
+  tasks:
+    - name: Get Info EC2
+      ec2_instance_info:
+        region: "{{ region }}"
+        filters:
+          "tag:Name": ["app-node-1"]
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+      register: ec2
+
+    - name: Add instance EC2 public IP to host group
+      add_host: hostname={{ item.public_dns_name }} groups=ec2jenkins
+      loop: "{{ ec2.instances }}"
+
+# Inicia a configuracao da EC2
 - name: "Ansible para configurar VM"
-  hosts: jenkins
-  become: true
-  gather_facts: yes
+  hosts: ec2jenkins
+  become: yes
+  become_method: sudo
+  gather_facts: true
 
   tasks:
     - name: Linux - Atualizando todos os pacotes
@@ -18,7 +42,7 @@
         - ansible
     
     - name: Download required roles docker (desktop local)
-      local_action: command ansible-galaxy install nickjj.docker -vvv
+      local_action: command ansible-galaxy install nickjj.docker
       become: false
 
     - name: Download required roles java
@@ -29,7 +53,4 @@
       local_action: command ansible-galaxy install geerlingguy.jenkins 
       become: false
 
-    - name: Download required roles jenkins
-      local_action: command ansible-galaxy install kobanyan.jenkins-jnlp-slave 
-      become: false
       

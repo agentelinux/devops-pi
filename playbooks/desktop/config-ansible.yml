@@ -18,7 +18,7 @@
         - ansible
     
     - name: Download required roles docker (desktop local)
-      local_action: command ansible-galaxy install nickjj.docker -vvv
+      local_action: command ansible-galaxy install nickjj.docker
       become: false
 
     - name: Download required roles java
@@ -28,8 +28,3 @@
     - name: Download required roles jenkins
       local_action: command ansible-galaxy install geerlingguy.jenkins 
       become: false
-
-    - name: Download required roles jenkins
-      local_action: command ansible-galaxy install kobanyan.jenkins-jnlp-slave 
-      become: false
-      

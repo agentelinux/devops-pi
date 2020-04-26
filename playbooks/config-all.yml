@@ -1,17 +1,47 @@
-- name: "Ansible para configurar VM"
-  hosts: jenkins,nodes
-  become: true
-  gather_facts: yes
+- name: Setup Ansible Hosts Group
+  hosts: localhost
+  gather_facts: False
 
   vars_files:
     - vars/aws_credentials.yml
     - vars/aws.yml
 
   tasks:
-    - name: Linux - Atualizando todos os pacotes
-      package:
-        name: '*'
+    - name: Get Info EC2
+      ec2_instance_info:
+        region: "{{ region }}"
+        filters:
+          "tag:Name": ["app-node-1","app-node-2","app-node-3"]
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+      register: ec2
+
+    - name: Add instance EC2 public IP to host group
+      add_host: hostname={{ item.public_dns_name }} groups=ec2all
+      loop: "{{ ec2.instances }}"
+
+# Inicia a configuracao da EC2
+
+- hosts: ec2all
+  name: Ansible para configurar VM
+  become: yes
+  become_method: sudo
+  gather_facts: true
+
+  vars_files:
+    - vars/aws_credentials.yml
+    - vars/aws.yml
+
+  tasks:
+    - name: Update APT Cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade all packages to the latest version
+      apt:
+        name: "*"
         state: latest
+        force_apt_get: yes
       
     - name: Verifique se uma lista de pacotes para instalar
       package:

@@ -1,5 +1,5 @@
 - name: "Ansible para configurar VM"
-  hosts: local
+  hosts: localhost
   gather_facts: False
   
   vars_files:
