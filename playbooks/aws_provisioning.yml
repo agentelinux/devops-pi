@@ -1,0 +1,172 @@
+- name: "Ansible para configurar VM"
+  hosts: localhost
+  gather_facts: False
+  
+  vars_files:
+    - vars/aws_credentials.yml
+    - vars/aws.yml
+
+  tasks:
+    - name: Amazon EC2 | Create Key Pair
+      ec2_key:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        name: "{{ KeyPairDev }}"
+      register: ec2_key_result
+
+    - name: Save private key
+      copy: content="{{ ec2_key_result.key.private_key }}" dest="../{{ KeyPairDev }}.pem" mode=0600
+      when: ec2_key_result.changed
+
+    - name: create VPC
+      ec2_vpc_net:
+        state: "present"
+        name: "{{ vpc_name }}"
+        cidr_block: "{{ vpc_cidr_block }}"
+        region: "{{ region }}"
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        resource_tags: { "Environment":"Development" }
+      register: create_vpc           
+
+    - name: "set fact: VPC ID"
+      set_fact:
+        vpc_id: "{{ create_vpc.vpc.id }}"
+
+    - name: create VPC subnets
+      ec2_vpc_subnet:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        state: present
+        vpc_id: "{{ vpc_id }}"
+        cidr: "{{ cidr_block }}"
+        tags:
+          Name: "{{ sub_tag }}"
+      register: create_vpc_subnets
+
+    - name: "set fact: VPC SUB ID"
+      set_fact:
+        vpc_subnet_ids: "{{ create_vpc_subnets.subnet.id }}"
+    
+    - name: Create a security group
+      ec2_group:
+        name: "{{ security_group }}"
+        vpc_id: "{{ vpc_id }}"
+        description: The webservers security group
+        region: "{{ region }}"
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        rules:
+            - proto: tcp
+              from_port: 22
+              to_port: 22
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 80
+              to_port: 80
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 443
+              to_port: 443
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 8080
+              to_port: 8080
+              cidr_ip: 0.0.0.0/0
+        rules_egress:
+            - proto: all
+              cidr_ip: 0.0.0.0/0
+
+    - name: Launch the new EC2 Instance 22
+      ec2_instance:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"
+        name: "{{ name_service }}-{{ item }}"
+        key_name: "{{ KeyPairDev }}"
+        security_group: "{{ security_group }}"
+        vpc_subnet_id: "{{ vpc_subnet_ids }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ image_ami }}"
+        network:
+            assign_public_ip: true
+        state: running
+        region: "{{ region }}"
+      with_sequence: start=1 end="{{ count }}"
+      register: ec2
+
+    - name: Create Internet Gateway with VPC
+      ec2_vpc_igw:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"        
+        vpc_id: "{{ create_vpc.vpc.id }}"
+        state: present
+      register: igw
+
+    - name: Set up public subnet route table
+      ec2_vpc_route_table:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"                
+        vpc_id: "{{ create_vpc.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "{{ route_tag }}"
+        subnets:
+          - "{{ vpc_subnet_ids }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
+      register: public_route_table      
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ item.public_dns_name }}"
+        port: 22 
+        state: started 
+      with_items: "{{ ec2.results[0].instances }}"
+
+    - name: Create iam user "{{ name_aim_user_s3 }}"
+      iam_user:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"          
+        name: "{{ name_aim_user_s3 }}"
+        managed_policy:
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        state: present
+      register: iuser
+
+    - name: Create a buckets
+      aws_s3:
+        bucket: '{{ item }}'
+        mode: create
+        region: us-east-1
+      loop:
+        - dh-pi-devops-dev
+        - dh-pi-devops-prod
+
+    - name: Create S3
+      s3_bucket:
+        aws_access_key: "{{ AWS_access_key }}"
+        aws_secret_key: "{{ AWS_secret_key }}"          
+        name: '{{ item }}'
+        region: "{{ region }}"
+        state: present
+        policy:
+          Version: '2012-10-17'
+          Statement: 
+            - Effect: Allow
+              Principal: 
+                'AWS' : "{{ iuser.iam_user.user.arn }}"
+              Action: [
+                  's3:ListBucket',
+                  's3:DeleteObject',
+                  's3:GetObject',
+                  's3:PutObject',
+                  's3:PutObjectAcl'
+              ]
+              Resource: [
+                'arn:aws:s3:::{{item}}/*',
+                'arn:aws:s3:::{{item}}'
+              ]
+      loop:
+        - dh-pi-devops-dev
+        - dh-pi-devops-prod

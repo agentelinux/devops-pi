@@ -1,0 +1,6 @@
+# file: site.yml
+- import_playbook: playbooks/aws_provisioning.yml
+# - import_playbook: playbooks/config-all.yml
+# - import_playbook: playbooks/config-ansible.yml
+# - import_playbook: playbooks/docker.yml
+# - import_playbook: playbooks/jenkins.yml
