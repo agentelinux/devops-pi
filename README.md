@@ -1,3 +1,4 @@
+
 # DevOps Hands-on AWS com Ansible, Docker, Jenkins
 Estrutura dividida em Trilhas
 > Trilhas 1 e 2 correspondem ao ambiente desktop
@@ -52,4 +53,5 @@ Concluído as demais Trilhas, vamos criar o Jenkins dentro da VM EC2 AWS
 * * * `$ exit`
 * Instalar o Jenkins com ansible
 * * `$ ansible-playbook playbooks/jenkins.yml`
+
 
