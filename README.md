@@ -56,10 +56,10 @@ Instalação do Ansible na EC2 01.
 
 Instalação do Docker nas EC2 1,2,3.
 
-`$ ansible-playbook playbooks/config-docker.yml -i inventories/desktop`
+`$ ansible-playbook playbooks/docker.yml -i inventories/desktop`
 
 Instalação do Jenkins na EC2 1.
 
-`$ ansible-playbook playbooks/config-jenkins.yml -i inventories/desktop`
+`$ ansible-playbook playbooks/jenkins.yml -i inventories/desktop`
 
 
