@@ -62,3 +62,4 @@ Instalação do Jenkins na EC2 1.
 
 `$ ansible-playbook playbooks/config-jenkins.yml -i inventories/desktop`
 
+
