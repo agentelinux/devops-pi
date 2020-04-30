@@ -1,5 +1,5 @@
 - name: Install DevOPS
-  hosts: jenkins,nodes
+  hosts: localhost
   become: true
   gather_facts: yes
 

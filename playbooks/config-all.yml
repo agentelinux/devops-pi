@@ -1,6 +1,6 @@
 - name: Setup Ansible Hosts Group
   hosts: localhost
-  gather_facts: False
+  gather_facts: Fase
 
   vars_files:
     - vars/aws_credentials.yml
@@ -17,8 +17,9 @@
       register: ec2
 
     - name: Add instance EC2 public IP to host group
-      add_host: hostname={{ item.public_dns_name }} groups=ec2all
+      add_host: hostname={{ item.public_ip_address }} groups=ec2all
       loop: "{{ ec2.instances }}"
+      when: item.public_ip_address is defined
 
 # Inicia a configuracao da EC2
 

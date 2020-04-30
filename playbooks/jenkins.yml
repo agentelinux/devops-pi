@@ -19,6 +19,7 @@
     - name: Add instance EC2 public IP to host group
       add_host: hostname={{ item.public_dns_name }} groups=ec2jenkins
       loop: "{{ ec2.instances }}"
+      when: item.public_ip_address is defined
 
 # Inicia a configuracao da EC2
 - name: Instalar Jenkins em VM

@@ -1,5 +1,5 @@
 - name: "Ansible para configurar VM"
-  hosts: jenkins
+  hosts: localhost
   become: true
   gather_facts: yes
 
