@@ -62,4 +62,20 @@ Instalação do Jenkins na EC2 1.
 
 `$ ansible-playbook playbooks/jenkins.yml -i inventories/desktop`
 
+# IMPORTANTE
+
+É preciso trocar o nome do bucket no playbooks/aws_provisioning.yml
+```
+    - name: Create a buckets
+      aws_s3:
+        bucket: '{{ item }}'
+        mode: create
+        region: us-east-1
+      loop:
+        - dh-nomedodrupo-devops-homolog
+        - dh-nomedodrupo-devops-prod
+```
+
+> Os nomes de bucket devem ser exclusivos para todos os nomes de bucket existentes no Amazon S3. Os nomes de bucket devem estar em conformidade com as convenções de nomenclatura do DNS. Os nomes de bucket devem ter no mínimo 3 e no máximo 63 
+
 
